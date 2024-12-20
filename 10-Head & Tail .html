@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Head & Tail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Doto:wght@100..900&family=Rethink+Sans:ital,wght@0,400..800;1,400..800&family=Space+Grotesk:wght@300..700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+
+      button {
+        width: 100%;
+        border-radius: 8px;
+        font-size: 100%;
+      }
+
+      button:active {
+        background-color: rgb(143, 145, 146);
+        width: 100%;
+        border-radius: 8px;
+      }
+
+      /* button:disabled{
+       opacity: 0.5;
+       cursor: not-allowed;
+        } */
+
+      h1 {
+        text-align: center;
+        font-family: "Comfortaa", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 3rem;
+      }
+
+      .container {
+        height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 100px;
+
+        background-color: rgba(0, 240, 208, 0.068);
+        margin: 30px;
+        border-radius: 8px;
+        border: solid 1px;
+      }
+
+      .btn-container {
+        display: flex;
+        width: 50%;
+        height: 10%;
+        gap: 16px;
+      }
+
+      @media (max-width: 330px) {
+        .btn-container {
+          flex-wrap: wrap;
+          height: 25%;
+          width: 70%;
+        }
+      }
+      .result-conatiner {
+        display: flex;
+        height: auto;
+        justify-content: space-around;
+        margin-top: 10px;
+        font-size: 1.1rem;
+      }
+
+      .lower-display {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        gap: 4px;
+        text-align: center;
+        font-family: "Comfortaa", sans-serif;
+        font-optical-sizing: auto;
+
+        font-style: normal;
+      }
+
+      #display-results {
+        font-size: 2rem;
+        color: brown;
+        font-weight: 600;
+      }
+
+      .choose {
+        text-align: center;
+        font-family: "Comfortaa", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        color: brown;
+      }
+
+      .progress-bar-container {
+        width: 50%;
+        overflow: hidden;
+        border-radius: 5px;
+        border: solid 1px #ccc;
+      }
+      .progress-bar {
+        width: 0%;
+        height: 20px;
+        background-color: yellow;
+        transition: widht 0.5s ease-in-out;
+        /* background-color: inherit !important; */
+      }
+      #result-message {
+        text-align: center;
+      }
+
+      #popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+
+        background-color: rgba(236, 236, 236, 0.678);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 60px 0;
+        backdrop-filter: blur(2px);
+       
+        /* padding: 50px; */
+      }
+
+      #popup-content{
+            flex-direction: column;
+            display: flex;
+            justify-content: center;
+            height: 200px;
+        } 
+
+
+    
+      #popup-content h2 {
+        color: rgb(190, 5, 51);
+        text-align: center;
+
+        padding: 10px;
+        font-family: "Comfortaa", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 800;
+        font-style: normal;
+        font-size: 4rem;
+      }
+
+  
+    </style>
+  </head>
+  <body>
+    <div class="result-conatiner">
+      <p id="result-wins">WINS: 0</p>
+      <div class="progress-bar-container">
+        <div id="progress-bar" class="progress-bar" title="progress bar"></div>
+      </div>
+      <p id="result-losses">LOSSES: 0</p>
+    </div>
+    <div class="container">
+      <div>
+        <h1>HEADS & TAILS</h1>
+        <p class="choose">Guess the winning button.</p>
+        <div id="timer"></div>
+      </div>
+
+      <div class="btn-container">
+        <button id="heads-btn">Heads</button>
+        <button id="tails-btn">Tails</button>
+      </div>
+
+      <div class="lower-display">
+        <h3 id="display-results"></h3>
+        <h3 id="display-explain"></h3>
+      </div>
+    </div>
+    <p id="result-message"></p>
+
+    <div id="popup" style="display: none">
+      <div id="popup-content">
+        <h2>Game over!</h2>
+      </div>
+      <audio
+        id="click-sound"
+        src="./Asserts for Head&Tail/One click final.mp3"
+      ></audio>
+    </div>
+
+    <script>
+
+      // Section 1: Variable Declarations
+
+      const resultWinsElement = document.getElementById("result-wins");
+      const resultLoosesElement = document.getElementById("result-losses");
+      const displayResults = document.getElementById("display-results");
+      const displayExplain = document.getElementById("display-explain");
+      const timerSpan = document.getElementById("timer");
+      const headsElement = document.getElementById("heads-btn");
+      const tailsElement = document.getElementById("tails-btn");
+      let timerInterval;
+      const resultMessage = document.getElementById("result-message");
+      const popUP = document.getElementById("popup");
+      const progressBar = document.getElementById("progress-bar");
+      const clickSound = document.getElementById("click-sound");
+      let result;
+      let timeLeft = 120;
+
+      
+      // This section declares variables that reference HTML elements using document.getElementById(). These variables are used to interact with the HTML elements and update their content.
+
+      // Section 2: updateProgressBar() Function
+
+      // Function to update the progress bar based on time left
+
+
+
+      function updateProgressBar(timeLeft) {
+        const progressPercentage = (timeLeft / 60) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+        if (progressPercentage > 66) {
+          progressBar.style.background = "yellow";
+        } else if (progressPercentage > 33) {
+          progressBar.style.background = "orange";
+        } else {
+          progressBar.style.background = "red";
+        }
+      }
+
+
+
+      // This function updates the progress bar's width and background color based on the timeLeft variable. The progress bar's width is calculated as a percentage of the total time (60 seconds). The background color changes based on the progress percentage.
+
+      // Section 3: updateTimer() Function
+
+      // Function to update the timer every second
+
+
+      function updateTimer() {
+        timeLeft--;
+        timerSpan.innerText = ``;
+        updateProgressBar(timeLeft);
+        if (timeLeft === 0) {
+          clearInterval(timerInterval);
+          popUP.style.display = "flex";
+          resultMessage.innerHTML = "Game Over!";
+          headsElement.innerText = "Play Again";
+          tailsElement.innerText = "Clear";
+          // Remove existing guess event listeners and add reset/clear functionality
+          headsElement.removeEventListener("click", handleGuess);
+          tailsElement.removeEventListener("click", handleGuess);
+          headsElement.addEventListener("click", resetGame);
+          tailsElement.addEventListener("click", clearGame);
+        }
+      }
+
+
+      // This function updates the timer every second. It decrements the timeLeft variable, updates the timer display, and calls the updateProgressBar() function. When the time runs out, it displays a game over message, updates the button text, and adds event listeners for the "Play Again" and "Clear" buttons.
+
+      // Section 4: handleGuess() Function
+
+
+
+      // Function to handle the user's guess
+
+
+      function handleGuess(e) {
+        clickSound.play();
+        guessHeadsTails(e.target.innerText);
+      }
+
+
+
+      // This function handles the user's guess by playing a click sound and calling the guessHeadsTails() function with the user's guess (either "Heads" or "Tails").
+
+      // Section 5: resetGame() Function
+
+      // Function to reset the game
+
+      function resetGame() {
+        timeLeft = 60;
+        score = { wins: 0, losses: 0 };
+        resultWinsElement.innerHTML = `WINS: ${score.wins}`;
+        resultLoosesElement.innerHTML = `LOSSES: ${score.losses}`;
+        popUP.style.display = "none";
+        headsElement.innerText = "Heads";
+        tailsElement.innerText = "Tails";
+        resultMessage.innerHTML = "";
+        // Restore original functionality
+        headsElement.removeEventListener("click", resetGame);
+        tailsElement.removeEventListener("click", clearGame);
+        headsElement.addEventListener("click", handleGuess);
+        tailsElement.addEventListener("click", handleGuess);
+        clearInterval(timerInterval);
+        timerInterval = setInterval(updateTimer, 1000);
+      }
+
+
+      // This function resets the game by setting the timeLeft variable to 60, resetting the score, and updating the button text. It also removes event listeners for the "Play Again" and "Clear" buttons and adds event listeners for the "Heads" and "Tails" buttons.
+
+      // Section 6: clearGame() Function
+
+      // Function to clear the game state
+
+
+      function clearGame() {
+        score = { wins: 0, losses: 0 };
+        resultWinsElement.innerHTML = `WINS: ${score.wins}`;
+        resultLoosesElement.innerHTML = `LOSSES: ${score.losses}`;
+        popUP.style.display = "none";
+        timeLeft = 0;
+        timerSpan.innerText = ``;
+        progressBar.style.width = `0%`;
+        // Keep the Heads and Tails buttons disabled
+
+        headsElement.disabled = true;
+        headsElement.style.opacity = "0.5";
+        headsElement.style.cursor = "not-allowed";
+        tailsElement.disabled = true;
+        tailsElement.style.opacity = "0.5";
+        tailsElement.style.cursor = "not-allowed";
+        headsElement.removeEventListener("click", resetGame);
+        tailsElement.removeEventListener("click", clearGame);
+      }
+
+      let score = { wins: 0, losses: 0 };
+
+
+      // Section 7: guessHeadsTails() Function
+      // Function to handle the Heads or Tails guess
+      
+
+      function guessHeadsTails(guess) {
+        const randomNumber = Math.random();
+        result = randomNumber > 0.5 ? "Heads" : "Tails";
+        displayExplain.innerHTML = `You guessed ${guess}.`;
+        if (result === guess) {
+          displayResults.innerHTML = "You win!";
+          resultWinsElement.innerHTML = `WINS: ${(score.wins += 1)}`;
+        } else {
+          displayResults.innerHTML = "You loss!";
+          resultLoosesElement.innerHTML = `LOSSES: ${(score.losses += 1)}`;
+        }
+      }
+
+      // Initial setup of event listeners and starting the timer
+      // Section 8: Initial Setup
+
+      headsElement.addEventListener("click", handleGuess);
+      tailsElement.addEventListener("click", handleGuess);
+      timerInterval = setInterval(updateTimer, 1000);
+    </script>
+  </body>
+</html>
